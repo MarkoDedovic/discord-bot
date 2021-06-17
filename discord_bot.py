@@ -36,7 +36,7 @@ class DiscordBot(discord.Client):
 
 if __name__ == '__main__':
     #TODO implement a secrets manager
-    token = 'ODU0NTQ3NDQzNzgxNTk5MzAz.YMlhUw.y4r9BSsJ4M5Ow037BpGheD6c7DA'
+    token = ''
 
     client = DiscordBot()
     client.run(token)

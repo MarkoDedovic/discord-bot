@@ -34,7 +34,7 @@ class ParrotParty:
             if (datetime.now() - self.last_party) > timedelta(minutes=self.cooldown) or self.override in message.content.lower():
                 print(f'{datetime.now().isoformat()} Throwing parrot party!')
 
-                await message.channel.send(content='<a:congaparrot:854195643605450762>' * 5)# <a:congaparrot:854214193289232424>' * 5)
+                await message.channel.send(content='<a:congaparrot:854214193289232424>' * 5)
                 self.last_party = datetime.now()
             else:
                 print(f'{datetime.now().isoformat()} Parrot party is on cooldown for '
