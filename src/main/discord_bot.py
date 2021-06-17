@@ -1,8 +1,8 @@
 import asyncio
 from datetime import datetime
 
-from src.main.handlers.parrot_party import ParrotParty
-from src.main.handlers.status_check import StatusCheck
+from handlers.parrot_party import ParrotParty
+from handlers.status_check import StatusCheck
 
 import discord
 
@@ -16,12 +16,16 @@ class DiscordBot(discord.Client):
         self.parrot_party = ParrotParty(self)
         self.status_check = StatusCheck(self)
 
+        self.first = True
+
     async def on_ready(self):
         # TODO log in UTC time - also implement a proper logger
         print(f'{datetime.now().isoformat()} {self.user} is ready')
 
-        # start the background tasks after we connect
-        self.loop.create_task(self.background_tasks())
+        if self.first:
+            self.first = False
+            # start the background tasks after we connect the first time
+            self.loop.create_task(self.background_tasks())
 
     async def on_message(self, message):
         await asyncio.gather(
@@ -35,8 +39,8 @@ class DiscordBot(discord.Client):
 
 
 if __name__ == '__main__':
-    #TODO implement a secrets manager
-    token = 'ODU0NTQ3NDQzNzgxNTk5MzAz.YMlhUw.L1F_35w9SM5FWVCi_Em1FXWvfss'
+    # TODO implement a secrets manager
+    token = ''
 
     client = DiscordBot()
     client.run(token)
