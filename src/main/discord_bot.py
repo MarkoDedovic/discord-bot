@@ -1,8 +1,10 @@
+import json
 import asyncio
 from datetime import datetime
 
-from handlers.parrot_party import ParrotParty
-from handlers.status_check import StatusCheck
+from src.main.util import secrets_loader
+from src.main.handlers.parrot_party import ParrotParty
+from src.main.handlers.status_check import StatusCheck
 
 import discord
 
@@ -39,8 +41,7 @@ class DiscordBot(discord.Client):
 
 
 if __name__ == '__main__':
-    # TODO implement a secrets manager
-    token = ''
+    config = json.loads(secrets_loader.get_secret('discord-bot'))
 
     client = DiscordBot()
-    client.run(token)
+    client.run(config['discord.bot.token.prod'])
