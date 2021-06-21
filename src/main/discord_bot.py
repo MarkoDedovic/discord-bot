@@ -1,10 +1,11 @@
 import json
 import asyncio
 from datetime import datetime
+import os
 
-from src.main.util import secrets_loader
-from src.main.handlers.parrot_party import ParrotParty
-from src.main.handlers.status_check import StatusCheck
+from util import secrets_loader
+from handlers.parrot_party import ParrotParty
+from handlers.status_check import StatusCheck
 
 import discord
 
@@ -39,9 +40,13 @@ class DiscordBot(discord.Client):
             self.status_check.execute()
         )
 
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
 if __name__ == '__main__':
-    config = json.loads(secrets_loader.get_secret('discord-bot'))
-
+    config_file = open(os.path.join(__location__, 'config.json'))
+    config = json.load(config_file)
     client = DiscordBot()
-    client.run(config['discord.bot.token.prod'])
+    if config['use.aws.secrets.manager'] == 'true':
+        config = json.loads(secrets_loader.get_secret('discord-bot'))
+    client.run(config['discord.bot.token.dev' if config['use.dev.bot'] == 'true' else 'discord.bot.token.prod'])
