@@ -20,7 +20,7 @@ class ParrotParty:
 
     async def execute(self, message):
         if message.author == self.client.user:
-            if message.content is self.parrot_party_str:
+            if ':congaparrot:' in message.content:
                 await asyncio.sleep(2)
                 await message.delete()
             return

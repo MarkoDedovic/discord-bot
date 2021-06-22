@@ -14,12 +14,15 @@ class StatusCheck:
         self.config = config
 
         self.failed_checks = 0
-        self.maintenance = False
+        self.maintenance = True
 
     async def execute(self):
         try:
             status, activity = self.get_status()
-            await self.client.change_presence(status=status, activity=activity)
+            if activity:
+                await self.client.change_presence(status=status, activity=activity)
+            else:
+                await self.client.change_presence(status=status)
             print(f'{datetime.now().isoformat()} {status} - {activity}')
         finally:
             await asyncio.sleep(30)
@@ -28,13 +31,13 @@ class StatusCheck:
     def get_status(self):
         print('\nChecking status...')
         try:
-            data = steam.game_servers.a2s_info(('147.135.85.168', 27015))
+            data = steam.game_servers.a2s_info((self.config['ip'], self.config['port']))
 
             if data['visibility']:
                 self.maintenance = True
-                return discord.Status.dnd, 'maintenance'
+                return discord.Status.dnd, discord.Game('maintenance')
             else:
-                game_str = f'{data["map"]} | {data["players"]} player' + ('s' if data["players"] != '1' else '')
+                game_str = f'{data["map"]} | {data["players"]} player' + ('s' if data["players"] != 1 else '')
                 self.maintenance = False
                 self.failed_checks = 0
                 return discord.Status.online, discord.Game(name=game_str)
@@ -42,13 +45,13 @@ class StatusCheck:
         except socket.timeout as error:
             print(error, f'Failed checks: {self.failed_checks}')
             self.failed_checks += 1
-            if self.failed_checks == 4 and not self.maintenance:
-                self.client.loop.create_task(self.alert_sleg())
+            if self.failed_checks > 3:
+                if self.failed_checks == 4 and not self.maintenance:
+                    self.client.loop.create_task(self.send_crash_alerts())
                 return discord.Status.dnd, None
-            return None, None
+            return discord.Status.idle, None
 
-    async def alert_sleg(self):
-        sleg = await self.client.fetch_user(self.config['sleg.id'])
-        channel = self.client.get_channel(self.config['sleg.channel.id'])
-        await channel.send(f'{sleg.mention} Uwu whawt\'s thiws? I think the sewvew cwashed! Hewp me daddy squid!')
-        print(f'{datetime.now().isoformat()} Alerted server crash!')
+    async def send_crash_alerts(self):
+        for channel_to_alert in self.config['alerts']:
+            await self.client.get_channel(channel_to_alert['id']).send(f'{channel_to_alert["mention"]} help! I have crashed :(')
+            print(f'{datetime.now().isoformat()} Alerted server crash!')
