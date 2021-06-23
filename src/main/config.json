@@ -1,6 +1,6 @@
 {
-    "use.aws.secrets.manager": "true",
-    "use.dev.bot": "false",
+    "use.aws.secrets.manager": true,
+    "use.dev.bot": false,
     "discord.bot.token.prod": "",
     "discord.bot.token.dev": ""
 }

@@ -47,6 +47,6 @@ if __name__ == '__main__':
     config_file = open(os.path.join(__location__, 'config.json'))
     config = json.load(config_file)
     client = DiscordBot()
-    if config['use.aws.secrets.manager'] == 'true':
+    if config['use.aws.secrets.manager']:
         config = json.loads(secrets_loader.get_secret('discord-bot'))
-    client.run(config['discord.bot.token.dev' if config['use.dev.bot'] == 'true' else 'discord.bot.token.prod'])
+    client.run(config['discord.bot.token.dev' if config['use.dev.bot'] else 'discord.bot.token.prod'])
