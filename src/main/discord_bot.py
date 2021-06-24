@@ -16,18 +16,13 @@ class DiscordBot(discord.Client):
 
         # TODO figure out a way to do this programatically so it can be stored in a config
         self.parrot_party = ParrotParty(self)
-        self.status_check = StatusCheck(self)
+        self.status_check = StatusCheck(self, kwargs['status_check_config'])
 
-        self.first = True
+        self.loop.create_task(self.background_tasks())
 
     async def on_ready(self):
         # TODO log in UTC time - also implement a proper logger
         print(f'{datetime.now().isoformat()} {self.user} is ready')
-
-        if self.first:
-            self.first = False
-            # start the background tasks after we connect the first time
-            self.loop.create_task(self.background_tasks())
 
     async def on_message(self, message):
         await asyncio.gather(
@@ -35,13 +30,14 @@ class DiscordBot(discord.Client):
         )
 
     async def background_tasks(self):
+        await self.wait_until_ready()
         await asyncio.gather(
             self.status_check.execute()
         )
 
 
 if __name__ == '__main__':
-    config = json.loads(secrets_loader.get_secret('discord-bot'))
+    config = json.loads(secrets_loader.get_secret('discord-bot'))['prod']
 
-    client = DiscordBot()
-    client.run(config['discord.bot.token.prod'])
+    client = DiscordBot(status_check_config=config['statusCheck'])
+    client.run(config['botToken'])
