@@ -46,7 +46,7 @@ class StatusCheck:
         except socket.timeout as error:
             print(error, f'Failed checks: {self.failed_checks}')
             self.failed_checks += 1
-            if self.failed_checks > 3:
+            if 3 < self.failed_checks:
                 if self.failed_checks == 4 and not self.maintenance:
                     self.client.loop.create_task(self.send_crash_alerts())
                 return discord.Status.dnd, None
