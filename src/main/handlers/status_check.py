@@ -19,10 +19,11 @@ class StatusCheck:
     async def execute(self):
         try:
             status, activity = self.get_status()
-            if activity:
-                await self.client.change_presence(status=status, activity=activity)
+            if status == discord.Status.idle:
+                await self.client.change_presence(status=status, activity=self.client.activity)
             else:
-                await self.client.change_presence(status=status)
+                await self.client.change_presence(status=status, activity=activity)
+
             print(f'{datetime.now().isoformat()} {status} - {activity}')
         finally:
             await asyncio.sleep(30)
@@ -52,6 +53,6 @@ class StatusCheck:
             return discord.Status.idle, None
 
     async def send_crash_alerts(self):
-        for channel_to_alert in self.config['alerts']:
-            await self.client.get_channel(channel_to_alert['id']).send(f'{channel_to_alert["mention"]} help! I have crashed :(')
+        for channel in self.config['channels_to_alert']:
+            await self.client.get_channel(channel['id']).send(f'{channel["mention"]} help! I have crashed :(')
             print(f'{datetime.now().isoformat()} Alerted server crash!')

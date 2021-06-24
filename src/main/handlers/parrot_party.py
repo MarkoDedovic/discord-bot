@@ -19,24 +19,19 @@ class ParrotParty:
         self.last_party = datetime.min
 
     async def execute(self, message):
-        if message.author == self.client.user:
-            if ':congaparrot:' in message.content:
-                await asyncio.sleep(2)
-                await message.delete()
-            return
-
         # only check public channels
         if message.channel.type != discord.ChannelType.text:
             return
 
-        if any(keyword in message.content for keyword in self.keywords):
+        if any(keyword in message.content.lower() for keyword in self.keywords):
             print(f'{datetime.now().isoformat()} Parrot party triggered!')
             print(message.author, '-', message.content, message.jump_url)
 
             if (datetime.now() - self.last_party) > timedelta(minutes=self.cooldown) or self.override in message.content.lower():
                 print(f'{datetime.now().isoformat()} Throwing parrot party!')
 
-                await message.channel.send(content=self.parrot_party_str)
+                await message.channel.send(content=self.parrot_party_str, delete_after=2)
+
                 self.last_party = datetime.now()
             else:
                 print(f'{datetime.now().isoformat()} Parrot party is on cooldown for '

@@ -37,7 +37,7 @@ class DiscordBot(discord.Client):
 
 
 if __name__ == '__main__':
-    config = json.loads(secrets_loader.get_secret('discord-bot'))
+    config = json.loads(secrets_loader.get_secret('discord-bot'))['prod']
 
-    client = DiscordBot(status_check_config=config['status.check.config'])
-    client.run(config['discord.bot.token.prod'])
+    client = DiscordBot(status_check_config=config['statusCheck'])
+    client.run(config['botToken'])
