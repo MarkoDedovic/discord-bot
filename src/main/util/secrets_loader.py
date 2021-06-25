@@ -1,3 +1,5 @@
+import json
+
 import boto3
 
 
@@ -8,4 +10,4 @@ def get_secret(secret_name, region_name='us-east-2'):
         region_name=region_name
     )
 
-    return client.get_secret_value(SecretId=secret_name)['SecretString']
+    return json.loads(client.get_secret_value(SecretId=secret_name)['SecretString'])
