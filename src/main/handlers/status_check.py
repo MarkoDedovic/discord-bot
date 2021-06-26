@@ -38,7 +38,7 @@ class StatusCheck:
                 self.maintenance = True
                 return discord.Status.dnd, discord.Game('maintenance')
             else:
-                game_str = f'{data["players"]} player' + ('s' if data["players"] != 1 else '') + f' | {data["map"]}'
+                game_str = f'{data["players"]} player{"s" if data["players"] != 1 else ""} | {data["map"]}'
                 self.maintenance = False
                 self.failed_checks = 0
                 return discord.Status.online, discord.Game(name=game_str)
