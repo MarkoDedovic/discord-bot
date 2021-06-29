@@ -30,7 +30,7 @@ class ParrotParty:
             if not message.guild.id in self.last_party:
                 self.last_party[message.guild.id] = datetime.min
 
-            if (datetime.now() - self.last_party[message.guild.id]) > timedelta(minutes=self.cooldown) or self.override in message.content.lower():
+            if timedelta(minutes=self.cooldown) < (datetime.now() - self.last_party[message.guild.id]) or self.override in message.content.lower():
                 print(f'{datetime.now().isoformat()} Throwing parrot party!')
 
                 await message.channel.send(content=self.parrot_party_str, delete_after=2)
