@@ -19,10 +19,11 @@ class Leaves:
         self.client = client
         self.config = config
 
-        self.cooldown = 30
-        self.leaves_str = ':leaves:'
-        self.leaves_sources = ['🍃', '🌳']
+        self.leaves_emoji = '🍃'
+        self.leaves_alias = ':leaves:'      
         self.leaves_destroyer = ':fire:'
+        self.leaves_sources = ['🍃', '🌳']  
+        self.cooldown = 30
 
         self.server_vars = {}
 
@@ -37,14 +38,14 @@ class Leaves:
             self.server_vars[message.guild.id][LAST_LEAVES] = datetime.min
 
         if self.server_vars[message.guild.id][ONGOING]:
-            if '🍃' in message.content:
+            if self.leaves_emoji in message.content:
                 self.server_vars[message.guild.id][MESSAGE_COUNT] = 0
             else:
                 self.server_vars[message.guild.id][MESSAGE_COUNT] += 1
 
                 if self.server_vars[message.guild.id][MESSAGE_COUNT] == self.server_vars[message.guild.id][NUM_WAIT_MESSAGES]:
                     if self.server_vars[message.guild.id][LEAVES_SENT] < self.server_vars[message.guild.id][TIMES_REPEAT]:
-                        await message.channel.send(content=self.leaves_str)
+                        await message.channel.send(content=self.leaves_alias)
                         self.server_vars[message.guild.id][LEAVES_SENT] += 1
                         self.server_vars[message.guild.id][NUM_WAIT_MESSAGES] = random.choice(range(3,6))
                     elif self.server_vars[message.guild.id][LEAVES_SENT] == self.server_vars[message.guild.id][TIMES_REPEAT]:
