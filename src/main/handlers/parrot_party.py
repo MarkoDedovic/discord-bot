@@ -16,7 +16,7 @@ class ParrotParty:
         self.cooldown = 30
         self.parrot_party_str = '<a:congaparrot:854214193289232424>' * 5
 
-        self.last_party = datetime.min
+        self.last_party = {}
 
     async def execute(self, message):
         # only check public channels
@@ -27,12 +27,15 @@ class ParrotParty:
             print(f'{datetime.now().isoformat()} Parrot party triggered!')
             print(message.author, '-', message.content, message.jump_url)
 
-            if (datetime.now() - self.last_party) > timedelta(minutes=self.cooldown) or self.override in message.content.lower():
+            if not message.guild.id in self.last_party:
+                self.last_party[message.guild.id] = datetime.min
+
+            if timedelta(minutes=self.cooldown) < (datetime.now() - self.last_party[message.guild.id]) or self.override in message.content.lower():
                 print(f'{datetime.now().isoformat()} Throwing parrot party!')
 
                 await message.channel.send(content=self.parrot_party_str, delete_after=2)
 
-                self.last_party = datetime.now()
+                self.last_party[message.guild.id] = datetime.now()
             else:
                 print(f'{datetime.now().isoformat()} Parrot party is on cooldown for '
-                      f'{self.cooldown - ((datetime.now() - self.last_party).seconds // 60)} minutes')
+                      f'{self.cooldown - ((datetime.now() - self.last_party[message.guild.id]).seconds // 60)} minutes')
