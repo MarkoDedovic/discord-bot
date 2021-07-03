@@ -1,0 +1,8 @@
+GitHub:
+- .github/*
+Parrot Party:
+- src/main/handler/parrot_party.py
+Status Check:
+- src/main/handler/status_check.py
+Leaves:
+- src/main/handler/leaves.py
