@@ -11,6 +11,7 @@ MESSAGE_COUNT = 'message_count'
 NUM_WAIT_MESSAGES = 'number_of_messages_to_wait_for'
 LEAVES_SENT = 'leaves_sent'
 TIMES_REPEAT = 'times_to_repeat'
+CHANNEL = 'channel'
 LAST_LEAVES = 'last_leaves'
 
 class Leaves:
@@ -35,9 +36,10 @@ class Leaves:
             self.server_vars[message.guild.id][NUM_WAIT_MESSAGES] = 5
             self.server_vars[message.guild.id][LEAVES_SENT] = 0
             self.server_vars[message.guild.id][TIMES_REPEAT] = 5
+            self.server_vars[message.guild.id][CHANNEL] = message.channel
             self.server_vars[message.guild.id][LAST_LEAVES] = datetime.min
 
-        if self.server_vars[message.guild.id][ONGOING]:
+        if self.server_vars[message.guild.id][ONGOING] and message.channel == self.server_vars[message.guild.id][CHANNEL]:
             if self.leaves_emoji in message.content:
                 self.server_vars[message.guild.id][MESSAGE_COUNT] = 0
             else:
@@ -45,11 +47,11 @@ class Leaves:
 
                 if self.server_vars[message.guild.id][MESSAGE_COUNT] == self.server_vars[message.guild.id][NUM_WAIT_MESSAGES]:
                     if self.server_vars[message.guild.id][LEAVES_SENT] < self.server_vars[message.guild.id][TIMES_REPEAT]:
-                        await message.channel.send(content=self.leaves_alias)
+                        await self.server_vars[message.guild.id][CHANNEL].send(content=self.leaves_alias)
                         self.server_vars[message.guild.id][LEAVES_SENT] += 1
                         self.server_vars[message.guild.id][NUM_WAIT_MESSAGES] = random.choice(range(3,6))
                     elif self.server_vars[message.guild.id][LEAVES_SENT] == self.server_vars[message.guild.id][TIMES_REPEAT]:
-                        await message.channel.send(content=random.choices((self.leaves_destroyer, random.choice(self.config['GIFs'])), weights=[90, 10])[0])
+                        await self.server_vars[message.guild.id][CHANNEL].send(content=random.choices((self.leaves_destroyer, random.choice(self.config['GIFs'])), weights=[90, 10])[0])
                         self.server_vars[message.guild.id][ONGOING] = False
                     self.server_vars[message.guild.id][MESSAGE_COUNT] = 0
 
@@ -62,8 +64,11 @@ class Leaves:
                     f'{self.cooldown - ((datetime.now() - self.server_vars[message.guild.id][LAST_LEAVES]).seconds // 60)} minutes')
             elif self.server_vars[message.guild.id][ONGOING]:
                 print('Another leaves is currently still going!')
+            elif not message.channel.permissions_for(message.guild.get_member(self.client.user.id)).send_messages:
+                print('No permission to send messages in this channel!')
             else:
                 print(f'{datetime.now().isoformat()} Throwing leaves!')
+                self.server_vars[message.guild.id][CHANNEL] = message.channel
                 self.server_vars[message.guild.id][TIMES_REPEAT] = random.choices((random.choice(range(1, 10)), 30), weights=[95, 5])[0]
                 self.server_vars[message.guild.id][NUM_WAIT_MESSAGES] = random.choice(range(3,6))
                 self.server_vars[message.guild.id][ONGOING] = True
