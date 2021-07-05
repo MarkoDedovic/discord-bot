@@ -20,9 +20,9 @@ class Leaves:
         self.config = config
 
         self.leaves_emoji = '🍃'
-        self.leaves_alias = ':leaves:'      
+        self.leaves_alias = ':leaves:'
         self.leaves_destroyer = ':fire:'
-        self.leaves_sources = ['🍃', '🌳']  
+        self.leaves_sources = ['🍃', '🌳']
         self.cooldown = 30
 
         self.server_vars = {}
