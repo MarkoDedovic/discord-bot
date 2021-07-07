@@ -40,7 +40,7 @@ class Leaves:
             self.channel_vars[message.channel.id][LAST_LEAVES] = datetime.min
 
         if self.channel_vars[message.channel.id][ONGOING]:
-            if self.leaves_emoji in message.content:
+            if self.leaves_emoji in message.content or self.leaves_alias in message.content:
                 self.channel_vars[message.channel.id][MESSAGE_COUNT] = 0
             else:
                 self.channel_vars[message.channel.id][MESSAGE_COUNT] += 1
@@ -49,6 +49,7 @@ class Leaves:
                     if self.channel_vars[message.channel.id][LEAVES_SENT] < self.channel_vars[message.channel.id][TIMES_REPEAT]:
                         await message.channel.send(content=self.leaves_alias)
                         self.channel_vars[message.channel.id][LEAVES_SENT] += 1
+                        await asyncio.sleep(2)
                         self.channel_vars[message.channel.id][NUM_WAIT_MESSAGES] = random.choice(range(3,6))
                     elif self.channel_vars[message.channel.id][LEAVES_SENT] == self.channel_vars[message.channel.id][TIMES_REPEAT]:
                         await message.channel.send(content=random.choices((self.leaves_destroyer, random.choice(self.config[CONFIG_GIFS])), weights=[90, 10])[0])
