@@ -51,6 +51,7 @@ class Leaves:
                     elif self.channel_vars[message.channel.id][LEAVES_SENT] == self.channel_vars[message.channel.id][TIMES_REPEAT]:
                         await message.channel.send(content=random.choices((self.leaves_destroyer, random.choice(self.config['GIFs'])), weights=[90, 10])[0])
                         self.channel_vars[message.channel.id][ONGOING] = False
+                        self.channel_vars[message.channel.id][LEAVES_SENT] = 0
                     self.channel_vars[message.channel.id][MESSAGE_COUNT] = 0
 
         if any(leaves_source in message.content for leaves_source in self.leaves_sources):
