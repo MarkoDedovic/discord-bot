@@ -6,6 +6,9 @@ from datetime import datetime, timedelta
 import discord
 
 
+CONFIG_COOLDOWN = 'cooldown'
+CONFIG_GIFS = 'GIFs'
+
 ONGOING = 'ongoing'
 MESSAGE_COUNT = 'message_count'
 NUM_WAIT_MESSAGES = 'number_of_messages_to_wait_for'
@@ -23,7 +26,6 @@ class Leaves:
         self.leaves_alias = ':leaves:'
         self.leaves_destroyer = ':fire:'
         self.leaves_sources = ['🍃', '🌳']
-        self.cooldown = 30
 
         self.channel_vars = {}
 
@@ -49,7 +51,7 @@ class Leaves:
                         self.channel_vars[message.channel.id][LEAVES_SENT] += 1
                         self.channel_vars[message.channel.id][NUM_WAIT_MESSAGES] = random.choice(range(3,6))
                     elif self.channel_vars[message.channel.id][LEAVES_SENT] == self.channel_vars[message.channel.id][TIMES_REPEAT]:
-                        await message.channel.send(content=random.choices((self.leaves_destroyer, random.choice(self.config['GIFs'])), weights=[90, 10])[0])
+                        await message.channel.send(content=random.choices((self.leaves_destroyer, random.choice(self.config[CONFIG_GIFS])), weights=[90, 10])[0])
                         self.channel_vars[message.channel.id][ONGOING] = False
                         self.channel_vars[message.channel.id][LEAVES_SENT] = 0
                     self.channel_vars[message.channel.id][MESSAGE_COUNT] = 0
@@ -58,9 +60,9 @@ class Leaves:
             print(f'{datetime.now().isoformat()} Leaves triggered!')
             print(message.author, '-', message.content, message.jump_url)
 
-            if (datetime.now() - self.channel_vars[message.channel.id][LAST_LEAVES]) < timedelta(minutes=self.cooldown):
+            if (datetime.now() - self.channel_vars[message.channel.id][LAST_LEAVES]) < timedelta(minutes=self.config[CONFIG_COOLDOWN]):
                 print(f'{datetime.now().isoformat()} Leaves is on cooldown for '
-                    f'{self.cooldown - ((datetime.now() - self.channel_vars[message.channel.id][LAST_LEAVES]).seconds // 60)} minutes')
+                    f'{self.config[CONFIG_COOLDOWN] - ((datetime.now() - self.channel_vars[message.channel.id][LAST_LEAVES]).seconds // 60)} minutes')
             elif self.channel_vars[message.channel.id][ONGOING]:
                 print('Another leaves is currently still going!')
             elif not message.channel.permissions_for(message.guild.get_member(self.client.user.id)).send_messages:
